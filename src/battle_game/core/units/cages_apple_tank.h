@@ -13,11 +13,13 @@ class cages_apple_tank : public Unit {
   void TankMove(float move_speed, float rotate_angular_speed);
   void TurretRotate();
   void Fire();
+  void gao1(uint32_t &fire_count_down_);
+  void gao2(uint32_t &fire_count_down_);
   [[nodiscard]] const char *UnitName() const override;
   [[nodiscard]] const char *Author() const override;
 
   float turret_rotation_{0.0f};
   uint32_t fire_count_down_{0};
-  uint32_t mine_count_down_{0};
+  uint32_t arch_count_down_{0};
 };
 }  // namespace battle_game::unit

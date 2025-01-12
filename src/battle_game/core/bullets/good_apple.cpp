@@ -17,14 +17,18 @@ good_apple::good_apple(GameCore *core,
 }
 
 void good_apple::Render() {
-  SetTransformation(position_, rotation_, glm::vec2{.2f});
+  SetTransformation(position_, rotation_, glm::vec2{0.5f});
   SetColor(game_core_->GetPlayerColor(player_id_));
-  SetTexture(BATTLE_GAME_ASSETS_DIR "textures/apple.png");
+  SetTexture(BATTLE_GAME_ASSETS_DIR "textures/yy.png");
   DrawModel(0);
 }
 
 void good_apple::Update() {
-  position_ += velocity_ * kSecondPerTick;
+  // game_core_->PushEventGenerateParticle<particle::Smoke>(
+  //     position_, rotation_, game_core_->RandomInCircle() * 1.0f, 0.2f,
+  //     glm::vec4{1.0f, 1.0f, 1.0f, 1.0f}, 1.0f);
+  rotation_ += glm::radians(4 * 6.0);
+  position_ += velocity_ * (kSecondPerTick * 0.5f);
   bool should_die = false;
   if (game_core_->IsBlockedByObstacles(position_)) {
     should_die = true;
@@ -50,7 +54,7 @@ good_apple::~good_apple() {
   for (int i = 0; i < 5; i++) {
     game_core_->PushEventGenerateParticle<particle::Smoke>(
         position_, rotation_, game_core_->RandomInCircle() * 2.0f, 0.2f,
-        glm::vec4{0.0f, 0.0f, 0.0f, 1.0f}, 3.0f);
+        glm::vec4{1.0f, 1.0f, 1.0f, 1.0f}, 3.0f);
   }
 }
 }  // namespace battle_game::bullet

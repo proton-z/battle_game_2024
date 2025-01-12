@@ -133,56 +133,75 @@ void cages_apple_tank::TurretRotate() {
     }
   }
 }
-
-void cages_apple_tank::Fire() {
-  if (fire_count_down_ == 0) {
-    auto player = game_core_->GetPlayer(player_id_);
-    if (player) {
-      auto &input_data = player->GetInputData();
-      if (input_data.mouse_button_down[GLFW_MOUSE_BUTTON_LEFT]) {
-        if (fire_count_down_ == 0)
-          fire_count_down_ = kTickPerSecond;  // Fire interval 1 second.
-      }
+void cages_apple_tank::gao1(uint32_t &fire_count_down_) {
+  auto player = game_core_->GetPlayer(player_id_);
+  if (player) {
+    auto &input_data = player->GetInputData();
+    if (input_data.key_down[GLFW_KEY_Q]) {
+      if (fire_count_down_ == 0)
+        fire_count_down_ = kTickPerSecond;  // Fire interval 1 second.
     }
   }
-  if (fire_count_down_ > 50) {
+
+  if (fire_count_down_ > 40 && fire_count_down_ % 4 == 0) {
     auto player = game_core_->GetPlayer(player_id_);
     if (player) {
       auto &input_data = player->GetInputData();
       auto velocity = Rotate(glm::vec2{0.0f, 20.0f}, turret_rotation_);
-      for (int r = 0; r <= 0; r++) {
-        // GenerateBullet<bullet::CannonBall>(
-        //     position_ + Rotate({0.0f, 1.2f}, turret_rotation_),
-        //     turret_rotation_, GetDamageScale(), velocity);
-        double r0 = 360.0f / 10 * r;
-        double r1 = 2.0 * ((60 - fire_count_down_));
-        double r2 = -r1;
-        // std::cerr << "?? " << fire_count_down_ << " " << r0 << " " << r1 << "
-        // "
-        //           << r2 << " " << (60-fire_count_down_ ) << " "
-        //           << 2.0 * ((fire_count_down_ - 60)) << std::endl;
-        // double r1 = 5.f;
+      for (int r = 0; r < 10; r++) {
+        double r1 = 360.0f / 10 * r;
+        double v = r1 + 5.0f * (60 - fire_count_down_);
         GenerateBullet<bullet::good_apple>(
             position_ + Rotate({0.0f, 1.2f}, turret_rotation_),
-            turret_rotation_ + glm::radians(r0), GetDamageScale(),
-            Rotate(velocity, glm::radians(r0)));
-
-        if (fire_count_down_ != 60 && fire_count_down_ > 55) {
-          GenerateBullet<bullet::good_apple>(
-              position_ + Rotate({0.0f, 1.2f}, turret_rotation_),
-              turret_rotation_ + glm::radians(r1), GetDamageScale(),
-              Rotate(velocity, glm::radians(r1)));
-          GenerateBullet<bullet::good_apple>(
-              position_ + Rotate({0.0f, 1.2f}, turret_rotation_),
-              turret_rotation_ + glm::radians(r2), GetDamageScale(),
-              Rotate(velocity, glm::radians(r2)));
-        }
+            turret_rotation_ + glm::radians(r1), GetDamageScale(),
+            Rotate(velocity, glm::radians(v)));
       }
     }
   }
   if (fire_count_down_) {
     fire_count_down_--;
   }
+}
+
+void cages_apple_tank::gao2(uint32_t &fire_count_down_) {
+  if (fire_count_down_ == 0) {
+    auto player = game_core_->GetPlayer(player_id_);
+    if (player) {
+      auto &input_data = player->GetInputData();
+      if (input_data.mouse_button_down[GLFW_MOUSE_BUTTON_LEFT]) {
+        if (fire_count_down_ == 0)
+          fire_count_down_ = kTickPerSecond / 2;  // Fire interval 1 second.
+      }
+    }
+  }
+  if (fire_count_down_ == 30 || fire_count_down_ == 25) {
+    auto player = game_core_->GetPlayer(player_id_);
+    if (player) {
+      auto &input_data = player->GetInputData();
+      auto velocity = Rotate(glm::vec2{0.0f, 20.0f}, turret_rotation_);
+      double r1 = 10.f;
+      double r2 = -r1;
+      GenerateBullet<bullet::CannonBall>(
+          position_ + Rotate({0.0f, 1.2f}, turret_rotation_), turret_rotation_,
+          GetDamageScale(), velocity);
+
+      GenerateBullet<bullet::CannonBall>(
+          position_ + Rotate({0.0f, 1.2f}, turret_rotation_),
+          turret_rotation_ + glm::radians(r1), GetDamageScale(),
+          Rotate(velocity, glm::radians(r1)));
+      GenerateBullet<bullet::CannonBall>(
+          position_ + Rotate({0.0f, 1.2f}, turret_rotation_),
+          turret_rotation_ + glm::radians(r2), GetDamageScale(),
+          Rotate(velocity, glm::radians(r2)));
+    }
+  }
+  if (fire_count_down_) {
+    fire_count_down_--;
+  }
+}
+void cages_apple_tank::Fire() {
+  gao1(fire_count_down_);
+  gao2(arch_count_down_);
 }
 
 bool cages_apple_tank::IsHit(glm::vec2 position) const {
@@ -193,7 +212,7 @@ bool cages_apple_tank::IsHit(glm::vec2 position) const {
 }
 
 const char *cages_apple_tank::UnitName() const {
-  return "cage's_apple_Tank";
+  return "cage's_apple_Tank(auto fire: press E)";
 }
 
 const char *cages_apple_tank::Author() const {

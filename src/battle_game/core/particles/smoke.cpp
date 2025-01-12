@@ -1,5 +1,7 @@
 #include "battle_game/core/particles/smoke.h"
 
+// #include <iostream>
+
 #include "battle_game/core/game_core.h"
 
 namespace battle_game::particle {
@@ -20,7 +22,8 @@ Smoke::Smoke(GameCore *game_core,
 
 void Smoke::Render() {
   SetTransformation(position_, rotation_, glm::vec2{size_});
-  SetColor(glm::vec4{glm::vec3{1.0f}, strength_} * color_);
+  SetColor(glm::vec4{glm::vec3{1.0f, 0.0f, 0.0f}, strength_} * color_);
+  // std::cerr << "?" << color_ << std::endl;
   SetTexture(BATTLE_GAME_ASSETS_DIR "textures/particle2.png");
   DrawModel();
 }

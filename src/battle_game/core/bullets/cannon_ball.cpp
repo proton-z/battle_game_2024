@@ -17,9 +17,9 @@ CannonBall::CannonBall(GameCore *core,
 }
 
 void CannonBall::Render() {
-  SetTransformation(position_, rotation_, glm::vec2{0.1f});
+  SetTransformation(position_, rotation_, glm::vec2{0.3f});
   SetColor(game_core_->GetPlayerColor(player_id_));
-  SetTexture(BATTLE_GAME_ASSETS_DIR "textures/particle3.png");
+  SetTexture(BATTLE_GAME_ASSETS_DIR "textures/blue.png");
   DrawModel(0);
 }
 
