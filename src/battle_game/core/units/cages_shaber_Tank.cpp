@@ -75,12 +75,13 @@ cages_shaber_Tank::cages_shaber_Tank(GameCore *game_core,
 }
 
 void cages_shaber_Tank::Render() {
-  battle_game::SetTransformation(position_, rotation_);
-  battle_game::SetTexture(0);
+  battle_game::SetTransformation(position_, rotation_, glm::vec2{2.5f});
+  battle_game::SetTexture(BATTLE_GAME_ASSETS_DIR "textures/lty.png");
+  // battle_game::DrawModel();
   battle_game::SetColor(game_core_->GetPlayerColor(player_id_));
-  battle_game::DrawModel(tank_body_model_index);
-  battle_game::SetRotation(turret_rotation_);
-  battle_game::DrawModel(tank_turret_model_index);
+  battle_game::DrawModel();
+  // battle_game::SetRotation(turret_rotation_);
+  // battle_game::DrawModel();
 }
 
 void cages_shaber_Tank::Update() {
@@ -133,56 +134,71 @@ void cages_shaber_Tank::TurretRotate() {
     }
   }
 }
-
-void cages_shaber_Tank::Fire() {
-  if (fire_count_down_ == 0) {
-    auto player = game_core_->GetPlayer(player_id_);
-    if (player) {
-      auto &input_data = player->GetInputData();
-      if (input_data.mouse_button_down[GLFW_MOUSE_BUTTON_LEFT]) {
-        if (fire_count_down_ == 0)
-          fire_count_down_ = kTickPerSecond;  // Fire interval 1 second.
-      }
+void cages_shaber_Tank::gao1(uint32_t &fire_count_down_) {
+  auto player = game_core_->GetPlayer(player_id_);
+  if (player) {
+    auto &input_data = player->GetInputData();
+    if (input_data.key_down[GLFW_KEY_Q]) {
+      if (fire_count_down_ == 0)
+        fire_count_down_ = kTickPerSecond;  // Fire interval 1 second.
     }
   }
-  if (fire_count_down_ > 50) {
+
+  if (fire_count_down_ > 40 && fire_count_down_ % 4 == 0) {
     auto player = game_core_->GetPlayer(player_id_);
     if (player) {
       auto &input_data = player->GetInputData();
       auto velocity = Rotate(glm::vec2{0.0f, 20.0f}, turret_rotation_);
-      for (int r = 0; r <= 0; r++) {
-        // GenerateBullet<bullet::CannonBall>(
-        //     position_ + Rotate({0.0f, 1.2f}, turret_rotation_),
-        //     turret_rotation_, GetDamageScale(), velocity);
-        double r0 = 360.0f / 10 * r;
-        double r1 = 2.0 * ((60 - fire_count_down_));
-        double r2 = -r1;
-        // std::cerr << "?? " << fire_count_down_ << " " << r0 << " " << r1 << "
-        // "
-        //           << r2 << " " << (60-fire_count_down_ ) << " "
-        //           << 2.0 * ((fire_count_down_ - 60)) << std::endl;
-        // double r1 = 5.f;
-        GenerateBullet<bullet::CannonBall>(
-            position_ + Rotate({0.0f, 1.2f}, turret_rotation_),
-            turret_rotation_ + glm::radians(r0), GetDamageScale(),
-            Rotate(velocity, glm::radians(r0)));
-
-        if (fire_count_down_ != 60 && fire_count_down_ > 55) {
-          GenerateBullet<bullet::CannonBall>(
-              position_ + Rotate({0.0f, 1.2f}, turret_rotation_),
-              turret_rotation_ + glm::radians(r1), GetDamageScale(),
-              Rotate(velocity, glm::radians(r1)));
-          GenerateBullet<bullet::CannonBall>(
-              position_ + Rotate({0.0f, 1.2f}, turret_rotation_),
-              turret_rotation_ + glm::radians(r2), GetDamageScale(),
-              Rotate(velocity, glm::radians(r2)));
-        }
+      for (int r = 0; r < 10; r++) {
+        double r1 = 360.0f / 10 * r;
+        double v = r1 + 5.0f * (60 - fire_count_down_);
+        GenerateBullet<bullet::xlb>(
+            position_, turret_rotation_ + glm::radians(r1), GetDamageScale(),
+            Rotate(velocity, glm::radians(v)));
       }
     }
   }
   if (fire_count_down_) {
     fire_count_down_--;
   }
+}
+
+void cages_shaber_Tank::gao2(uint32_t &fire_count_down_) {
+  if (fire_count_down_ == 0) {
+    auto player = game_core_->GetPlayer(player_id_);
+    if (player) {
+      auto &input_data = player->GetInputData();
+      if (input_data.mouse_button_down[GLFW_MOUSE_BUTTON_LEFT]) {
+        if (fire_count_down_ == 0)
+          fire_count_down_ = kTickPerSecond / 2;  // Fire interval 1 second.
+      }
+    }
+  }
+  if (fire_count_down_ == 30 || fire_count_down_ == 25) {
+    auto player = game_core_->GetPlayer(player_id_);
+    if (player) {
+      auto &input_data = player->GetInputData();
+      auto velocity = Rotate(glm::vec2{0.0f, 20.0f}, turret_rotation_);
+      double r1 = 10.f;
+      double r2 = -r1;
+      GenerateBullet<bullet::xlb>(position_, turret_rotation_, GetDamageScale(),
+                                  velocity);
+
+      GenerateBullet<bullet::xlb>(
+          position_, turret_rotation_ + glm::radians(r1), GetDamageScale(),
+          Rotate(velocity, glm::radians(r1)));
+      GenerateBullet<bullet::xlb>(
+          position_, turret_rotation_ + glm::radians(r2), GetDamageScale(),
+          Rotate(velocity, glm::radians(r2)));
+    }
+  }
+  if (fire_count_down_) {
+    fire_count_down_--;
+  }
+}
+void cages_shaber_Tank::Fire() {
+  gao1(fire_count_down_);
+  gao2(arch_count_down_);
 }
 
 bool cages_shaber_Tank::IsHit(glm::vec2 position) const {

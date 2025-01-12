@@ -181,15 +181,15 @@ void cages_apple_tank::gao2(uint32_t &fire_count_down_) {
       auto velocity = Rotate(glm::vec2{0.0f, 20.0f}, turret_rotation_);
       double r1 = 10.f;
       double r2 = -r1;
-      GenerateBullet<bullet::CannonBall>(
+      GenerateBullet<bullet::good_apple>(
           position_ + Rotate({0.0f, 1.2f}, turret_rotation_), turret_rotation_,
           GetDamageScale(), velocity);
 
-      GenerateBullet<bullet::CannonBall>(
+      GenerateBullet<bullet::good_apple>(
           position_ + Rotate({0.0f, 1.2f}, turret_rotation_),
           turret_rotation_ + glm::radians(r1), GetDamageScale(),
           Rotate(velocity, glm::radians(r1)));
-      GenerateBullet<bullet::CannonBall>(
+      GenerateBullet<bullet::good_apple>(
           position_ + Rotate({0.0f, 1.2f}, turret_rotation_),
           turret_rotation_ + glm::radians(r2), GetDamageScale(),
           Rotate(velocity, glm::radians(r2)));
