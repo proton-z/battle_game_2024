@@ -22,6 +22,8 @@ void GameCore::GeneratePrimaryUnitList() {
    * TODO: Add Your Unit Here!
    * */
   ADD_SELECTABLE_UNIT(unit::Tank);
+  ADD_SELECTABLE_UNIT(unit::cages_shaber_Tank);
+  ADD_SELECTABLE_UNIT(unit::cages_apple_tank);
 
   unit.reset();
 }
